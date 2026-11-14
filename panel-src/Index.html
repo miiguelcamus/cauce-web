@@ -1,0 +1,184 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b10;--bg2:#0c131b;--card:#101a24;--card2:#16222e;--ink:#eaf2f8;--ink2:#b9cbd8;--mut:#7b94a5;--line:#1d2b38;--acc:#35e0b0;--amb:#ffc46b;--red:#ff8f8f;--r:16px;--ease:cubic-bezier(.22,.7,.2,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Inter",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.dis{font-family:"Sora",sans-serif;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+a{color:inherit}
+.wrap{width:min(1180px,100% - 32px);margin:0 auto;padding:26px 0 70px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.lg{display:flex;align-items:center;gap:11px}
+.lg svg{width:32px;height:32px}
+.lg b{font-family:"Sora",sans-serif;font-size:19px}
+.lg small{display:block;color:var(--mut);font-size:12.5px;font-weight:500}
+.rng{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:4px}
+.rng button{border:0;background:transparent;color:var(--ink2);font:600 13.5px "Inter";padding:8px 14px;border-radius:8px;cursor:pointer;transition:.2s}
+.rng button:hover{color:var(--ink)}
+.rng button.on{background:var(--acc);color:#04120d}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+.k{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.k small{display:block;color:var(--mut);font-size:12.5px;font-weight:600;letter-spacing:.04em;margin-bottom:9px}
+.k b{font-family:"Sora",sans-serif;font-size:32px;font-weight:600;letter-spacing:-.04em;display:block;line-height:1}
+.k .dt{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:600;margin-top:8px;padding:3px 8px;border-radius:99px}
+.dt.up{background:rgba(53,224,176,.12);color:var(--acc)}
+.dt.dn{background:rgba(255,143,143,.12);color:var(--red)}
+.dt.eq{background:var(--card2);color:var(--mut)}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin-bottom:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.box h3{font-size:16px;margin-bottom:4px}
+.box .sub{color:var(--mut);font-size:12.5px;margin-bottom:18px}
+/* barras por día */
+.chart{display:flex;align-items:stretch;gap:3px;height:190px}
+.bar{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;position:relative;cursor:default}
+.bar i{display:block;background:linear-gradient(180deg,var(--acc),#15836a);border-radius:3px 3px 0 0;min-height:2px;transition:filter .2s}
+.bar u{display:block;background:var(--amb);border-radius:0 0 3px 3px;min-height:0}
+.bar:hover i{filter:brightness(1.35)}
+.bar .tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#02070b;border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12.5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;z-index:5}
+.bar:hover .tip{opacity:1}
+.xax{display:flex;justify-content:space-between;margin-top:10px;font-size:11.5px;color:var(--mut)}
+.leg{display:flex;gap:16px;font-size:12.5px;color:var(--mut);margin-top:12px}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg i{width:9px;height:9px;border-radius:3px;display:block}
+/* listas */
+.lst{display:grid;gap:11px}
+.row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.row .nm{font-size:14px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .vl{font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.trk{grid-column:1/-1;height:6px;border-radius:99px;background:var(--card2);overflow:hidden}
+.trk i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .7s var(--ease)}
+.trk.am i{background:var(--amb)}
+/* embudo */
+.fun{display:grid;gap:10px}
+.fstep{background:var(--card2);border-radius:11px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;position:relative;overflow:hidden}
+.fstep .fill{position:absolute;inset:0;background:linear-gradient(90deg,rgba(53,224,176,.26),rgba(53,224,176,.06));transition:width .8s var(--ease)}
+.fstep span,.fstep b{position:relative;z-index:1}
+.fstep span{font-size:14px;color:var(--ink2)}
+.fstep b{font-variant-numeric:tabular-nums}
+.fstep em{font-style:normal;color:var(--mut);font-size:12.5px;margin-left:8px}
+/* solicitudes */
+.leads{display:grid;gap:10px}
+.lead{background:var(--card2);border:1px solid var(--line);border-radius:13px;padding:16px 18px}
+.lead .lh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap}
+.lead b{font-size:15.5px}
+.lead .meta{color:var(--mut);font-size:12.5px}
+.lead p{color:var(--ink2);font-size:14px;background:var(--bg);padding:10px 13px;border-radius:9px;margin-top:9px}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:99px;background:var(--bg);border:1px solid var(--line);color:var(--ink2)}
+.tag.ok{color:var(--acc);border-color:rgba(53,224,176,.4)}
+.acts{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.btn{border:0;cursor:pointer;font:600 13px "Inter";padding:8px 14px;border-radius:9px;text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:.2s}
+.btn.wa{background:#25d366;color:#fff}
+.btn.gh{background:transparent;color:var(--ink2);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.gh:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--acc)}
+.empty{color:var(--mut);font-size:14px;padding:22px 0;text-align:center}
+.foot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:22px;color:var(--mut);font-size:12.5px}
+.foot a{color:var(--acc)}
+.load{display:grid;place-items:center;height:60vh;color:var(--mut);gap:14px}
+.spin{width:28px;height:28px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.grid,.grid3{grid-template-columns:1fr}}
+@media(hover:none){.bar .tip{display:none}}
+@media(max-width:560px){.wrap{width:calc(100% - 24px)}.k b{font-size:26px}.chart{height:150px}}
+</style></head><body>
+<div class="wrap">
+ <div class="top">
+  <div class="lg"><svg viewBox="0 0 40 40"><rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="#101a24" stroke="#1d2b38"/><path d="M10 26c4 0 4-12 10-12s6 12 10 12" fill="none" stroke="#35e0b0" stroke-width="2.6" stroke-linecap="round"/></svg>
+   <div><b>Panel de Cauce</b><small data-web>cargando…</small></div></div>
+  <div class="rng" role="tablist">
+   <button data-d="7">7 días</button><button data-d="30" class="on">30 días</button><button data-d="90">90 días</button>
+  </div>
+ </div>
+ <div id="app"><div class="load"><div class="spin"></div><span>Cargando tus datos…</span></div></div>
+</div>
+<script>
+var D=null,DIAS=30;
+var $=function(s,r){return (r||document).querySelector(s)};
+function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return{'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
+function delta(a,b){
+ if(!b&&!a)return '<span class="dt eq">sin datos antes</span>';
+ if(!b)return '<span class="dt up">nuevo</span>';
+ var p=Math.round((a-b)/b*100);
+ var c=p>0?'up':p<0?'dn':'eq';
+ return '<span class="dt '+c+'">'+(p>0?'▲ +':p<0?'▼ ':'= ')+Math.abs(p)+'%</span>';
+}
+function mins(s){ if(!s)return '—'; return s<60? s+' s' : Math.floor(s/60)+' min '+(s%60)+' s'; }
+
+function lista(arr,total,clase){
+ if(!arr||!arr.length)return '<p class="empty">Sin datos todavía.</p>';
+ var max=Math.max.apply(null,arr.map(function(x){return x.v}))||1;
+ return '<div class="lst">'+arr.slice(0,7).map(function(x){
+  return '<div class="row"><span class="nm">'+esc(x.k)+'</span><span class="vl">'+x.v+'</span>'+
+   '<span class="trk '+(clase||'')+'"><i style="width:'+Math.round(x.v/max*100)+'%"></i></span></div>'}).join('')+'</div>';
+}
+
+function pinta(){
+ var k=D.kpi, s=D.serie, maxv=Math.max.apply(null,s.map(function(x){return x.v}))||1;
+ $('[data-web]').textContent=(D.web||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
+ var barras=s.map(function(x){
+  var h=Math.round(x.v/maxv*100), lh=x.l?Math.max(6,Math.round(x.l/maxv*100)):0;
+  return '<div class="bar"><span class="tip"><b>'+x.et+'</b> · '+x.v+' visitante'+(x.v===1?'':'s')+(x.l?' · '+x.l+' solicitud'+(x.l===1?'':'es'):'')+'</span>'+
+   '<i style="height:'+h+'%"></i>'+(lh?'<u style="height:'+lh+'%"></u>':'')+'</div>'}).join('');
+
+ var fmax=(D.embudo[0]||{}).v||1;
+ var fun=D.embudo.map(function(f,i){
+  var pc=fmax?Math.round(f.v/fmax*100):0;
+  return '<div class="fstep"><span class="fill" style="width:'+pc+'%"></span><span>'+esc(f.k)+'</span><b>'+f.v+'<em>'+pc+'%</em></b></div>'}).join('');
+
+ var leads=(D.solicitudes||[]).length? D.solicitudes.map(function(l){
+  var tel=String(l.c||'').replace(/\D/g,'');
+  var wa=tel.length>=9?'<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/34'+tel.slice(-9)+'">WhatsApp</a>':'';
+  var mail=/@/.test(l.c)?'<a class="btn gh" href="mailto:'+esc(l.c)+'">Email</a>':'';
+  return '<div class="lead"><div class="lh"><div><b>'+esc(l.b||l.n)+'</b><div class="meta">'+esc(l.n)+' · '+esc(l.c)+'</div></div>'+
+   '<span class="meta">'+esc(l.f)+'</span></div>'+
+   (l.m?'<p>'+esc(l.m)+'</p>':'')+
+   '<div class="tags"><span class="tag ok">'+esc(l.s||'—')+'</span><span class="tag">llegó por '+esc(l.src||'directo')+'</span></div>'+
+   '<div class="acts">'+wa+mail+'</div></div>'}).join('') : '<p class="empty">Todavía no hay solicitudes. Cuando alguien rellene el formulario, aparece aquí y te llega un email.</p>';
+
+ $('#app').innerHTML=
+ '<div class="kpis">'+
+  '<div class="k"><small>VISITANTES</small><b>'+k.visitantes+'</b>'+delta(k.visitantes,k.visitantesPrev)+'</div>'+
+  '<div class="k"><small>PÁGINAS VISTAS</small><b>'+k.visitas+'</b>'+delta(k.visitas,k.visitasPrev)+'</div>'+
+  '<div class="k"><small>SOLICITUDES</small><b>'+k.solicitudes+'</b>'+delta(k.solicitudes,k.solicitudesPrev)+'</div>'+
+  '<div class="k"><small>CONVERSIÓN</small><b>'+k.conversion+'%</b>'+delta(k.conversion,k.conversionPrev)+'</div>'+
+  '<div class="k"><small>TIEMPO MEDIO</small><b style="font-size:26px">'+mins(k.segMedio)+'</b><span class="dt eq">lee el '+(k.scrollMedio||0)+'% de la página</span></div>'+
+ '</div>'+
+
+ '<div class="grid">'+
+  '<div class="box"><h3>Visitantes por día</h3><p class="sub">Cada barra es un día. En ámbar, las solicitudes que llegaron.</p>'+
+   '<div class="chart">'+barras+'</div>'+
+   '<div class="xax"><span>'+(s[0]||{}).et+'</span><span>'+(s[s.length-1]||{}).et+'</span></div>'+
+   '<div class="leg"><span><i style="background:#35e0b0"></i>Visitantes</span><span><i style="background:#ffc46b"></i>Solicitudes</span></div></div>'+
+  '<div class="box"><h3>De dónde vienen</h3><p class="sub">Cómo ha llegado la gente a la web.</p>'+lista(D.origenes)+'</div>'+
+ '</div>'+
+
+ '<div class="grid3">'+
+  '<div class="box"><h3>El camino hasta contactar</h3><p class="sub">Dónde se cae la gente.</p><div class="fun">'+fun+'</div></div>'+
+  '<div class="box"><h3>Con qué entran</h3><p class="sub">Móvil, tablet u ordenador.</p>'+lista(D.dispositivos)+'</div>'+
+  '<div class="box"><h3>Hasta dónde bajan</h3><p class="sub">Cuánta página leen antes de irse.</p>'+lista(D.scroll,0,'am')+'</div>'+
+ '</div>'+
+
+ '<div class="grid">'+
+  '<div class="box"><h3>Solicitudes recibidas</h3><p class="sub">Las últimas, con botón para responder.</p><div class="leads">'+leads+'</div></div>'+
+  '<div class="box"><h3>Qué pulsan</h3><p class="sub">Los botones y secciones con más clics.</p>'+lista(D.clics)+
+   '<h3 style="margin-top:26px">Páginas más vistas</h3><p class="sub">&nbsp;</p>'+lista(D.paginas)+'</div>'+
+ '</div>'+
+
+ '<div class="foot"><span>Datos de los últimos '+D.dias+' días · se actualizan solos</span>'+
+  '<span><a href="'+D.hoja+'" target="_blank" rel="noopener">Ver los datos en bruto</a> · <a href="'+D.web+'" target="_blank" rel="noopener">Abrir la web</a></span></div>';
+}
+
+function carga(){
+ $('#app').innerHTML='<div class="load"><div class="spin"></div><span>Cargando tus datos…</span></div>';
+ google.script.run.withSuccessHandler(function(d){D=d;pinta()})
+  .withFailureHandler(function(e){$('#app').innerHTML='<p class="empty">No se han podido cargar los datos: '+esc(e&&e.message)+'</p>'})
+  .panelDatos(DIAS);
+}
+[].forEach.call(document.querySelectorAll('.rng button'),function(b){
+ b.onclick=function(){
+  [].forEach.call(document.querySelectorAll('.rng button'),function(x){x.classList.toggle('on',x===b)});
+  DIAS=+b.dataset.d;carga();
+ }});
+carga();
+</script></body></html>
