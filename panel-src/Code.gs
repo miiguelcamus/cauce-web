@@ -99,8 +99,8 @@ function registra(b) {
       String(b.sid || '').slice(0, 30), tipo,
       String(b.pg || '').slice(0, 40), String(b.src || '').slice(0, 40),
       String(b.dev || '').slice(0, 12), +b.w || 0,
-      b.v !== undefined ? b.v : (b.seg !== undefined ? b.seg : ''),
-      String(b.q || b.ref || '').slice(0, 120)
+      tipo === 'salida' ? (b.seg !== undefined ? +b.seg : '') : (b.v !== undefined ? b.v : ''),
+      tipo === 'salida' ? String(b.v !== undefined ? b.v : '') : String(b.q || b.ref || '').slice(0, 120)
     ]);
   } finally { lock.releaseLock(); }
   return { ok: true };
