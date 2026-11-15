@@ -175,9 +175,9 @@ function carga(){
  var listo=false;
  setTimeout(function(){if(!listo)fallo('La consulta está tardando demasiado. Pulsa Reintentar.')},25000);
  google.script.run
-  .withSuccessHandler(function(d){listo=true;D=d;try{pinta()}catch(err){fallo('Error al dibujar: '+(err&&err.message)+'\n'+((err&&err.stack)||'').split('\n').slice(0,3).join('\n'))}})
+  .withSuccessHandler(function(d){listo=true;try{D=(typeof d==='string')?JSON.parse(d):d}catch(e){return fallo('Respuesta ilegible del servidor')}if(!D||!D.kpi)return fallo('El servidor no ha devuelto datos. Vuelve a abrir el panel con tu cuenta de Google.');try{pinta()}catch(err){fallo('Error al dibujar: '+(err&&err.message)+'\n'+((err&&err.stack)||'').split('\n').slice(0,3).join('\n'))}})
   .withFailureHandler(function(e){listo=true;fallo((e&&e.message)||String(e))})
-  .panelDatos(DIAS);
+  .panelDatosJSON(DIAS);
 }
 [].forEach.call(document.querySelectorAll('.rng button'),function(b){
  b.onclick=function(){

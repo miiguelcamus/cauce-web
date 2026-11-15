@@ -148,6 +148,10 @@ function leer(nombre, cols) {
   return v.map(function (f) { var o = {}; cols.forEach(function (c, i) { o[c] = f[i]; }); return o; });
 }
 
+function panelDatosJSON(dias) {
+  return JSON.stringify(panelDatos(dias));
+}
+
 function panelDatos(dias) {
   soloPropietario();
   dias = dias || 30;
