@@ -233,7 +233,7 @@ function panelDatos(dias) {
     ],
     scroll: [25, 50, 75, 100].map(function (m) { return { k: m + '%', v: llegan[m] || 0 }; }),
     solicitudes: leads.slice(-40).reverse().map(function (r) {
-      return { f: r.fecha, n: r.nombre, c: r.contacto, b: r.negocio, s: r.interes, m: r.mensaje, src: r.origen, e: r.estado };
+      return { f: (r.fecha instanceof Date) ? Utilities.formatDate(r.fecha, tz, 'd MMM · HH:mm') : String(r.fecha), n: r.nombre, c: r.contacto, b: r.negocio, s: r.interes, m: r.mensaje, src: r.origen, e: r.estado };
     })
   };
 }
@@ -254,5 +254,12 @@ function borrarPruebas() {
   soloPropietario();
   var h = hoja('Eventos'), n = h.getLastRow() - 1;
   if (n > 0) h.getRange(2, 1, n, EV_COLS.length).clearContent();
-  return true;
+  var s = hoja('Solicitudes'), m = s.getLastRow() - 1;
+  if (m > 0) {
+    var v = s.getRange(2, 3, m, 3).getValues();   // nombre, contacto, negocio
+    for (var i = m - 1; i >= 0; i--) {
+      if (/prueba/i.test(v[i].join(' '))) s.deleteRow(i + 2);
+    }
+  }
+  return 'Datos de prueba borrados.';
 }
