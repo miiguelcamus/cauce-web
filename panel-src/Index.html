@@ -169,10 +169,14 @@ function pinta(){
   '<span><a href="'+D.hoja+'" target="_blank" rel="noopener">Ver los datos en bruto</a> · <a href="'+D.web+'" target="_blank" rel="noopener">Abrir la web</a></span></div>';
 }
 
+function fallo(t){$('#app').innerHTML='<div class="box" style="margin-top:20px"><h3>No se han podido cargar los datos</h3><p class="sub" style="margin-top:10px;white-space:pre-wrap">'+esc(t)+'</p><button class="btn gh" onclick="carga()" style="margin-top:14px">Reintentar</button></div>'}
 function carga(){
  $('#app').innerHTML='<div class="load"><div class="spin"></div><span>Cargando tus datos…</span></div>';
- google.script.run.withSuccessHandler(function(d){D=d;pinta()})
-  .withFailureHandler(function(e){$('#app').innerHTML='<p class="empty">No se han podido cargar los datos: '+esc(e&&e.message)+'</p>'})
+ var listo=false;
+ setTimeout(function(){if(!listo)fallo('La consulta está tardando demasiado. Pulsa Reintentar.')},25000);
+ google.script.run
+  .withSuccessHandler(function(d){listo=true;D=d;try{pinta()}catch(err){fallo('Error al dibujar: '+(err&&err.message)+'\n'+((err&&err.stack)||'').split('\n').slice(0,3).join('\n'))}})
+  .withFailureHandler(function(e){listo=true;fallo((e&&e.message)||String(e))})
   .panelDatos(DIAS);
 }
 [].forEach.call(document.querySelectorAll('.rng button'),function(b){
