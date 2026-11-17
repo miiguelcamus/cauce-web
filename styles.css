@@ -487,3 +487,13 @@ main{position:relative;z-index:1}
 .rp-l{stroke-width:18}
 .np{gap:0 24px}
 }
+/* lo que no pagas, versión pequeña en portada */
+.npm{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:28px;padding:8px 10px 8px 16px;border-radius:999px;background:rgba(250,252,251,.75);box-shadow:inset 0 0 0 1px var(--linea);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:box-shadow .3s}
+.npm:hover{box-shadow:inset 0 0 0 1.5px var(--tinta)}
+.npm span{font-size:13.5px;font-weight:600;color:var(--mut);margin-right:2px}
+.npm s{position:relative;text-decoration:none;font:600 15px/1 var(--h);letter-spacing:-.01em;padding:7px 12px;border-radius:999px;background:var(--blanco)}
+.npm s::after{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;border-radius:2px;background:var(--coral);transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease)}
+.npm.in s::after{transform:none}
+.npm.in s:nth-of-type(1)::after{transition-delay:.7s}.npm.in s:nth-of-type(2)::after{transition-delay:.9s}.npm.in s:nth-of-type(3)::after{transition-delay:1.1s}
+@media(max-width:620px){.npm{border-radius:22px;padding:14px}.npm span{width:100%}}
+.p-index .rio-pag{opacity:0;transition:opacity .2s}

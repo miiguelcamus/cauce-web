@@ -52,7 +52,8 @@ if(AD){var bs=$$('.ad-sw button',AD),tocado=false;
 // río de página: se dibuja al bajar
 var RP=$('[data-rp]');
 if(RP){var rl=RP.getTotalLength();RP.style.strokeDasharray=rl;RP.style.strokeDashoffset=rl;
- function dib(){var h=document.documentElement,p=Math.min(1,scrollY/Math.max(1,h.scrollHeight-innerHeight));RP.style.strokeDashoffset=rl*(1-(RM?1:Math.max(.04,p)))}
+ var RPW=$('.rio-pag'),ini=document.body.classList.contains('p-index');
+ function dib(){var h=document.documentElement,p=Math.min(1,scrollY/Math.max(1,h.scrollHeight-innerHeight));if(ini)RPW.style.opacity=Math.max(0,Math.min(1,(scrollY-450)/350));RP.style.strokeDashoffset=rl*(1-(RM?1:Math.max(.04,p)))}
  dib();addEventListener('scroll',dib,{passive:true});addEventListener('resize',dib)}
 
 // pedir muestra: sector + vista previa en vivo
