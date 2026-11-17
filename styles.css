@@ -497,3 +497,7 @@ main{position:relative;z-index:1}
 .npm.in s:nth-of-type(1)::after{transition-delay:.7s}.npm.in s:nth-of-type(2)::after{transition-delay:.9s}.npm.in s:nth-of-type(3)::after{transition-delay:1.1s}
 @media(max-width:620px){.npm{border-radius:22px;padding:14px}.npm span{width:100%}}
 .p-index .rio-pag{opacity:0;transition:opacity .2s}
+.np-ini{padding:70px 0 60px}
+.np-ini .np{gap:2px 30px}
+.np-ini .np li{font-size:clamp(24px,2.2vw,31px)}
+.dia{margin-top:0}
