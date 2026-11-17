@@ -49,12 +49,36 @@ if(AD){var bs=$$('.ad-sw button',AD),tocado=false;
  bs.forEach(function(b){b.addEventListener('click',function(){tocado=true;pon(b.dataset.v);envia('clic',{q:'dia_'+b.dataset.v})})});
  if(io)new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();setTimeout(function(){if(!tocado)pon('con')},2600)}},{threshold:.5}).observe(AD)}
 
-// contacto: vista previa en vivo
-var lv=$('[data-live]');
-if(lv){var nm=$('[data-pv-name]'),lg=$('[data-pv-logo]'),ur=$('[data-pv-url]');
- function slug(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\b(en|de|del|la|el|los|las|y)\b/g,' ').replace(/[^a-z0-9]+/g,'').slice(0,22)}
- lv.addEventListener('input',function(){var v=lv.value.trim(),n=v.replace(/\s+(en|de)\s+.*$/i,'')||'Tu negocio';n=n.charAt(0).toUpperCase()+n.slice(1);
-  nm.textContent=n;lg.textContent=n;ur.textContent=(slug(n)||'tunegocio')+'.es'})}
+// río de página: se dibuja al bajar
+var RP=$('[data-rp]');
+if(RP){var rl=RP.getTotalLength();RP.style.strokeDasharray=rl;RP.style.strokeDashoffset=rl;
+ function dib(){var h=document.documentElement,p=Math.min(1,scrollY/Math.max(1,h.scrollHeight-innerHeight));RP.style.strokeDashoffset=rl*(1-(RM?1:Math.max(.04,p)))}
+ dib();addEventListener('scroll',dib,{passive:true});addEventListener('resize',dib)}
+
+// pedir muestra: sector + vista previa en vivo
+var SEC={'Peluquería':['#B0476E','#F7DCE6',['Corte','Color','Peinado']],'Barbería':['#1F2A44','#DDE3EE',['Corte','Barba','Corte + barba']],
+ 'Fisioterapia':['#0B6E8A','#D4ECF4',['Espalda','Deportiva','Pilates']],'Estética':['#9A5A2E','#F6E4D6',['Facial','Manicura','Depilación']],
+ 'Peluquería canina':['#7A5BB5','#E7DFF6',['Baño','Corte','Uñas']],'Restaurante':['#B23A2A','#F8DED6',['Carta','Menú del día','Reservar mesa']],
+ 'Otro':['#0A1F1C','#D3F6EA',['Servicio 1','Servicio 2','Servicio 3']]};
+var PV=$('[data-pv]'),sector='Peluquería';
+if(PV){var lv=$('[data-live]'),nm=$('[data-pv-name]'),lg=$('[data-pv-logo]'),ur=$('[data-pv-url]'),tg=$('[data-pv-tag]'),rs=$('[data-pv-res]'),cs=$$('[data-pv-cards] b');
+ function slug(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'').slice(0,22)}
+ function pinta(){var x=SEC[sector],v=lv.value.trim(),n=v||'Tu negocio';n=n.charAt(0).toUpperCase()+n.slice(1);
+  PV.style.setProperty('--pa',x[0]);PV.style.setProperty('--ps',x[1]);
+  nm.textContent=n;lg.textContent=n;ur.textContent=(v?slug(n):'tunegocio')+'.es';tg.textContent=sector+' · Abierto hoy';
+  cs.forEach(function(b,i){b.textContent=x[2][i]});rs.textContent='Jueves 17:00 · '+x[2][0]}
+ $$('[data-sec]').forEach(function(b){b.addEventListener('click',function(){sector=b.dataset.sec;$$('[data-sec]').forEach(function(o){o.setAttribute('aria-checked',o===b)});pinta()})});
+ lv.addEventListener('input',pinta);pinta()}
+
+// contacto: chat de preguntas rápidas
+var CH=$('[data-chat]');
+if(CH){var body=$('[data-ch-body]',CH),wa=$('[data-ch-wa]',CH),ocup=false;
+ function burbuja(cls,html){var d=document.createElement('div');d.className='bu '+cls;d.innerHTML=html;body.appendChild(d);body.scrollTop=body.scrollHeight;return d}
+ $$('[data-ch-q] button',CH).forEach(function(b){b.addEventListener('click',function(){if(ocup)return;ocup=true;b.classList.add('usada');
+  burbuja('tu',b.textContent);envia('clic',{q:'chat_'+b.dataset.k});
+  var e=burbuja('yo esc','<i></i><i></i><i></i>');
+  setTimeout(function(){e.remove();burbuja('yo',b.dataset.a+(b.dataset.l?'<br><a href="'+b.dataset.l+'">'+b.dataset.lt+'</a>':''));ocup=false},RM?0:900);
+  wa.href=CH.dataset.wa+'?text='+encodeURIComponent('Hola, vengo de vuestra web. '+b.textContent)})})}
 
 // ---------- analítica propia ----------
 var S={};
@@ -119,6 +143,7 @@ if(fm){
  fm.addEventListener('submit',function(e){
   e.preventDefault();
   var f={};['n','c','b','s','m'].forEach(function(k){var el=fm.elements[k];if(el)f[k]=(el.value||'').trim()});
+  if(f.b&&typeof sector!=='undefined'&&$('[data-sec]'))f.b=f.b+' · '+sector;
   if(!f.n||!f.c||!f.b){msg.className='fmsg err';msg.textContent='Rellena tu nombre, el contacto y tu negocio.';return}
   btn.disabled=true;var old=btn.innerHTML;btn.textContent='Enviando…';
   var done=function(ok){
