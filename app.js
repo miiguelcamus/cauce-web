@@ -10,7 +10,8 @@ $$('.mm a').forEach(function(a){a.addEventListener('click',function(){if(bg.getA
 
 // aparición
 var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -50px'}):null;
-$$('.rv').forEach(function(el,i){if(io){el.style.transitionDelay=(i%4)*70+'ms';io.observe(el)}else el.classList.add('in')});
+var grp=new Map();
+$$('.rv').forEach(function(el){var p=el.parentElement,n=grp.get(p)||0;grp.set(p,n+1);if(io){el.style.transitionDelay=Math.min(n,6)*80+'ms';io.observe(el)}else el.classList.add('in')});
 
 // ---------- analítica propia ----------
 var S={};
@@ -61,7 +62,7 @@ addEventListener('visibilitychange',function(){
 $$('a[href^="https://wa.me"],a[href^="tel:"]').forEach(function(a){
  a.addEventListener('click',function(){envia('clic',{q:/wa\.me/.test(a.href)?'whatsapp':'telefono'})});
 });
-$$('a[href="#contacto"]').forEach(function(a){a.addEventListener('click',function(){envia('clic',{q:'cta_'+(a.textContent||'').trim().slice(0,22)})})});
+$$('a[href^="contacto.html"]').forEach(function(a){a.addEventListener('click',function(){envia('clic',{q:'cta_'+(a.closest('.top,.mm')?'menu_':'')+(a.textContent||'').trim().slice(0,22)})})});
 $$('.wc').forEach(function(a){a.addEventListener('click',function(){envia('clic',{q:'trabajo_'+(($('h3',a)||{}).textContent||'').trim()})})});
 $$('.faq summary').forEach(function(s){s.addEventListener('click',function(){envia('clic',{q:'faq_'+s.textContent.trim().slice(0,34)})})});
 var pv=$('#precios');
