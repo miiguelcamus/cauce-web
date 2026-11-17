@@ -3,15 +3,58 @@ var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){retu
 var API=window.CAUCE_API||'';
 
 // cabecera
-var top=$('.top');addEventListener('scroll',function(){top.classList.toggle('sc',scrollY>8)},{passive:true});
+var top=$('.top');function sc(){top.classList.toggle('sc',scrollY>16)}sc();addEventListener('scroll',sc,{passive:true});
 var bg=$('.burger'),mm=$('.mm');
-if(bg)bg.addEventListener('click',function(){var o=bg.getAttribute('aria-expanded')!=='true';bg.setAttribute('aria-expanded',o);mm.classList.toggle('on',o);mm.setAttribute('aria-hidden',!o);document.body.style.overflow=o?'hidden':''});
+if(bg)bg.addEventListener('click',function(){var o=bg.getAttribute('aria-expanded')!=='true';bg.setAttribute('aria-expanded',o);mm.classList.toggle('on',o);mm.setAttribute('aria-hidden',!o);document.body.style.overflow=o?'hidden':'';top.classList.toggle('sc',o||scrollY>16)});
 $$('.mm a').forEach(function(a){a.addEventListener('click',function(){if(bg.getAttribute('aria-expanded')==='true')bg.click()})});
+var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// aparición
-var io='IntersectionObserver' in window?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -50px'}):null;
+// aparición escalonada por grupo
+var io='IntersectionObserver' in window&&!RM?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px'}):null;
 var grp=new Map();
-$$('.rv').forEach(function(el){var p=el.parentElement,n=grp.get(p)||0;grp.set(p,n+1);if(io){el.style.transitionDelay=Math.min(n,6)*80+'ms';io.observe(el)}else el.classList.add('in')});
+$$('.rv,.bx').forEach(function(el){var p=el.parentElement,n=grp.get(p)||0;grp.set(p,n+1);if(io){el.style.transitionDelay=Math.min(n,6)*90+'ms';io.observe(el)}else el.classList.add('in')});
+
+// capas del fondo con parallax
+var cv=$$('.curvas');
+if(cv.length&&!RM){var tk=0;addEventListener('scroll',function(){if(tk)return;tk=requestAnimationFrame(function(){tk=0;var y=scrollY;cv.forEach(function(c){c.style.transform='translate3d(0,'+(y*.18)+'px,0)'})})},{passive:true})}
+
+// iframes de las webs a escala
+function escala(){$$('.fr').forEach(function(f){var i=$('iframe',f);if(i)i.style.setProperty('--s',f.clientWidth/1280)})}
+escala();addEventListener('resize',escala);
+
+// el cauce: una reserva baja por el río y activa cada paso
+var C=$('[data-cauce]');
+if(C){
+ var P=$('[data-path]',C),G=$('[data-gota]',C),L=$$('.evs li',C),svg=$('.rio',C),len=P.getTotalLength(),VB=[1200,300];
+ function coloca(){L.forEach(function(li){var pt=P.getPointAtLength(+li.dataset.p*len);li.style.left=(pt.x/VB[0]*100)+'%';li.style.top=(pt.y/VB[1]*100)+'%'})}
+ coloca();addEventListener('resize',coloca);
+ var movil=matchMedia('(max-width:820px)'),DUR=9000,t0=null,vista=false;
+ function paso(ts){
+  if(!vista){t0=null;requestAnimationFrame(paso);return}
+  if(t0===null)t0=ts;var t=((ts-t0)%(DUR+1800))/DUR;
+  if(t<=1){
+   if(!movil.matches){var pt=P.getPointAtLength(t*len),r=svg.getBoundingClientRect(),cr=C.getBoundingClientRect();
+    G.style.transform='translate('+(pt.x/VB[0]*r.width+(r.left-cr.left))+'px,'+(pt.y/VB[1]*r.height+(r.top-cr.top))+'px)';G.style.opacity=t<.02||t>.98?0:1}
+   L.forEach(function(li){li.classList.toggle('on',t>=+li.dataset.p-.015)})
+  }else{G.style.opacity=0}
+  requestAnimationFrame(paso)}
+ if(RM){L.forEach(function(li){li.classList.add('on')})}
+ else{new IntersectionObserver(function(es){vista=es[0].isIntersecting}).observe(C);requestAnimationFrame(paso)}
+}
+
+// antes / después
+var AD=$('[data-ad]');
+if(AD){var bs=$$('.ad-sw button',AD),tocado=false;
+ function pon(v){AD.classList.toggle('con',v==='con');bs.forEach(function(b){b.setAttribute('aria-selected',b.dataset.v===v)})}
+ bs.forEach(function(b){b.addEventListener('click',function(){tocado=true;pon(b.dataset.v);envia('clic',{q:'dia_'+b.dataset.v})})});
+ if(io)new IntersectionObserver(function(es,o){if(es[0].isIntersecting){o.disconnect();setTimeout(function(){if(!tocado)pon('con')},2600)}},{threshold:.5}).observe(AD)}
+
+// contacto: vista previa en vivo
+var lv=$('[data-live]');
+if(lv){var nm=$('[data-pv-name]'),lg=$('[data-pv-logo]'),ur=$('[data-pv-url]');
+ function slug(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\b(en|de|del|la|el|los|las|y)\b/g,' ').replace(/[^a-z0-9]+/g,'').slice(0,22)}
+ lv.addEventListener('input',function(){var v=lv.value.trim(),n=v.replace(/\s+(en|de)\s+.*$/i,'')||'Tu negocio';n=n.charAt(0).toUpperCase()+n.slice(1);
+  nm.textContent=n;lg.textContent=n;ur.textContent=(slug(n)||'tunegocio')+'.es'})}
 
 // ---------- analítica propia ----------
 var S={};
@@ -63,6 +106,7 @@ $$('a[href^="https://wa.me"],a[href^="tel:"]').forEach(function(a){
  a.addEventListener('click',function(){envia('clic',{q:/wa\.me/.test(a.href)?'whatsapp':'telefono'})});
 });
 $$('a[href^="contacto.html"]').forEach(function(a){a.addEventListener('click',function(){envia('clic',{q:'cta_'+(a.closest('.top,.mm')?'menu_':'')+(a.textContent||'').trim().slice(0,22)})})});
+$$('.tr .nav-f,.tr-t .btn').forEach(function(a){a.addEventListener('click',function(){var t=a.closest('.tr');envia('clic',{q:'trabajo_'+(($('h2',t)||{}).textContent||'').trim()})})});
 $$('.wc').forEach(function(a){a.addEventListener('click',function(){envia('clic',{q:'trabajo_'+(($('h3',a)||{}).textContent||'').trim()})})});
 $$('.faq summary').forEach(function(s){s.addEventListener('click',function(){envia('clic',{q:'faq_'+s.textContent.trim().slice(0,34)})})});
 var pv=$('#precios');
